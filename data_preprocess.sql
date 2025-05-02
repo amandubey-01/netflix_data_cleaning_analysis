@@ -47,7 +47,7 @@ FROM netflix_raw
 WHERE show_id IS NULL; 
 
 /* 
- Since the above two queries returns no record, hence there show_id is fit for a primary key.
+ Since the above two queries returns no record, hence show_id is fit for a primary key.
  We can add the constraint or we can drop the table and define the table structure with show_id
  being a primary key.
 */
@@ -73,7 +73,7 @@ WHERE upper(title) IN (
 )
 ORDER BY upper(title);
 
--- Some records with same title can either be Movie or TV Show and be created again so release year is also consequential. 
+-- Some records with same title can either be a Movie or a TV Show and can be created again so release year is also consequential. 
 -- So in order to find actual duplicates we have to club them together.
 
 SELECT * FROM netflix_raw 
@@ -94,9 +94,9 @@ SELECT * FROM(
 WHERE rn = 1;
 
 /*
-2. New table for listed_in, director, country, cast, genre. This needs to be done as single record 
- contains mulitple values separated by columns, that would limit our analysis, let's say we want to
- dig into movies by director, but movies may have multiple directors so to accurately get the insight
+2. New table for listed_in, director, country, cast, genre. This needs to be done as single record in 
+these columns may contain mulitple values separated by commas, that would limit our analysis, let's say we want to
+ dig into movies by director, but a movie may have multiple directors so to accurately get the insight
  we should have separate record for each director in a movie.
 */
 
@@ -127,7 +127,7 @@ CROSS APPLY STRING_SPLIT(cast,',');
 
 /*
 3. Handling data type conversions. Data type of date_added is varchar, it ought to be DATE type.
-So, converting it to DATE dtype.
+So, converting it to DATE dtype. We will convert it when we carve a new cleaned table
 */
 
 /*
@@ -139,7 +139,7 @@ SELECT * FROM netflix_country WHERE show_id = 's1001';
 /* 
 We can populate null values in country by making a assumption if a director has made some movie
 in one country the other movies by the same director will also be in that country. While this isn't a 
-guaranteed it is still better than dropping such records as that will be huge loss.
+guaranteed fix it is still better than dropping such records as that will be huge data loss.
 */
 -- String split leaves those record where it is null, so we have to insert rows with country value NULL
 -- into netflix_country.
